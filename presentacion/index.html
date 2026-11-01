@@ -1,0 +1,1051 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gemini Chat · Presentación</title>
+  <meta name="description" content="Presentación del proyecto Gemini Chat: cómo se desarrolló y cómo se conectó la API de Google AI Studio." />
+  <style>
+    :root {
+      --ink: #10141d;
+      --muted: #5f687b;
+      --line: #e4e8f1;
+      --soft: #f4f7fd;
+      --accent: #3563f0;
+      --accent-2: #7b5cff;
+      --green: #15803d;
+      --red: #b42318;
+      --page: #e9edf5;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, "Helvetica Neue", Arial, sans-serif;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      color: var(--ink);
+      background:
+        radial-gradient(900px 500px at 12% -10%, rgba(53, 99, 240, 0.16), transparent 60%),
+        radial-gradient(900px 500px at 88% 0%, rgba(123, 92, 255, 0.14), transparent 55%),
+        var(--page);
+      overflow: hidden;
+    }
+
+    /* ---------- Escenario 16:9 ---------- */
+
+    .stage {
+      position: fixed;
+      left: 50%;
+      top: 50%;
+      width: 1280px;
+      height: 720px;
+      transform: translate(-50%, -50%) scale(var(--s, 1));
+      transform-origin: center center;
+      background: #fff;
+      border-radius: 26px;
+      box-shadow: 0 40px 100px rgba(16, 20, 29, 0.22);
+      overflow: hidden;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      flex-direction: column;
+      padding: 62px 76px 58px;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.28s ease, visibility 0.28s;
+    }
+
+    .slide.is-active {
+      opacity: 1;
+      visibility: visible;
+    }
+
+    .slide__inner {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .slide--center .slide__inner {
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+
+    .kicker {
+      margin: 0 0 14px;
+      font-size: 12.5px;
+      font-weight: 700;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    h1 {
+      margin: 0;
+      font-size: 82px;
+      line-height: 1;
+      letter-spacing: -0.035em;
+      font-weight: 750;
+    }
+
+    h2 {
+      margin: 6px 0 26px;
+      font-size: 44px;
+      line-height: 1.12;
+      letter-spacing: -0.025em;
+      font-weight: 720;
+    }
+
+    h3 {
+      margin: 0 0 8px;
+      font-size: 19px;
+      line-height: 1.25;
+      font-weight: 680;
+    }
+
+    p {
+      margin: 0;
+      font-size: 20px;
+      line-height: 1.55;
+      color: var(--muted);
+    }
+
+    .lead {
+      font-size: 24px;
+      line-height: 1.5;
+      color: #394154;
+      max-width: 900px;
+    }
+
+    .subtitle {
+      margin-top: 22px;
+      font-size: 25px;
+      line-height: 1.45;
+      color: #47506a;
+      max-width: 820px;
+    }
+
+    .meta {
+      margin-top: 30px;
+      font-size: 15px;
+      color: var(--muted);
+    }
+
+    .meta strong {
+      color: var(--ink);
+      font-weight: 650;
+    }
+
+    .meta--course {
+      margin-top: 10px;
+      max-width: 820px;
+      font-size: 14.5px;
+      line-height: 1.55;
+    }
+
+    .badges {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 34px;
+      justify-content: center;
+    }
+
+    .badge {
+      padding: 7px 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--soft);
+      font-size: 13px;
+      font-weight: 600;
+      color: #3c4660;
+    }
+
+    .accent-text {
+      background: linear-gradient(120deg, var(--accent), var(--accent-2));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    /* ---------- Listas ---------- */
+
+    ul {
+      margin: 0;
+      padding: 0;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 13px;
+    }
+
+    li {
+      position: relative;
+      padding-left: 27px;
+      font-size: 20px;
+      line-height: 1.5;
+      color: #303847;
+    }
+
+    li::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: 0.55em;
+      width: 9px;
+      height: 9px;
+      border-radius: 3px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+    }
+
+    li strong { color: var(--ink); }
+
+    /* ---------- Tarjetas y rejillas ---------- */
+
+    .grid-2 {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+    }
+
+    .grid-3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+
+    .card {
+      border: 1px solid var(--line);
+      border-radius: 18px;
+      padding: 22px 24px;
+      background: #fff;
+    }
+
+    .card p {
+      font-size: 16.5px;
+      line-height: 1.5;
+    }
+
+    .card--soft {
+      background: var(--soft);
+      border-color: transparent;
+    }
+
+    .card__icon {
+      display: grid;
+      place-items: center;
+      width: 38px;
+      height: 38px;
+      margin-bottom: 14px;
+      border-radius: 11px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      color: #fff;
+      font-weight: 700;
+      font-size: 16px;
+    }
+
+    /* ---------- Pasos ---------- */
+
+    .steps {
+      display: flex;
+      gap: 14px;
+      margin-top: 4px;
+    }
+
+    .step {
+      flex: 1;
+      padding: 20px 18px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+    }
+
+    .step__num {
+      display: grid;
+      place-items: center;
+      width: 30px;
+      height: 30px;
+      margin-bottom: 12px;
+      border-radius: 9px;
+      background: var(--soft);
+      color: var(--accent);
+      font-size: 14px;
+      font-weight: 750;
+    }
+
+    .step h3 { font-size: 16px; }
+
+    .step p { font-size: 14.5px; line-height: 1.45; }
+
+    /* ---------- Flujo ---------- */
+
+    .flow {
+      display: flex;
+      align-items: stretch;
+      gap: 14px;
+      margin: 10px 0 24px;
+    }
+
+    .flow__box {
+      flex: 1;
+      padding: 20px 18px;
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      background: #fff;
+      text-align: center;
+    }
+
+    .flow__box--accent {
+      border-color: rgba(53, 99, 240, 0.35);
+      background: #f5f8ff;
+    }
+
+    .flow__box h3 { font-size: 16px; margin-bottom: 6px; }
+
+    .flow__box p { font-size: 14px; line-height: 1.4; }
+
+    .flow__arrow {
+      align-self: center;
+      flex: none;
+      font-size: 26px;
+      color: var(--accent);
+      font-weight: 700;
+    }
+
+    /* ---------- Código ---------- */
+
+    pre {
+      margin: 0;
+      padding: 20px 24px;
+      border-radius: 16px;
+      background: #0e1320;
+      color: #dfe6f5;
+      font-family: var(--mono);
+      font-size: 15px;
+      line-height: 1.62;
+      overflow: hidden;
+      white-space: pre;
+      tab-size: 2;
+    }
+
+    pre .c { color: #74809a; }
+    pre .k { color: #8ab4ff; }
+    pre .s { color: #9be3a1; }
+    pre .u { color: #c4b5ff; }
+    pre .m { color: #ffd28a; }
+
+    .code-note {
+      margin-top: 14px;
+      font-size: 15px;
+      color: var(--muted);
+    }
+
+    /* ---------- Chips ---------- */
+
+    .chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 9px;
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 13px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      color: #3c4660;
+    }
+
+    .chip b {
+      font-family: var(--mono);
+      font-size: 12.5px;
+      color: var(--accent);
+    }
+
+    .chip--warn { border-color: #f3d3ad; background: #fff8ed; }
+    .chip--bad { border-color: #f4c6c0; background: #fff3f1; }
+
+    .callout {
+      margin-top: 22px;
+      padding: 16px 20px;
+      border-left: 4px solid var(--accent);
+      border-radius: 0 12px 12px 0;
+      background: #f5f8ff;
+      font-size: 17px;
+      line-height: 1.5;
+      color: #33405c;
+    }
+
+    .callout strong { color: var(--ink); }
+
+    .ok { color: var(--green); font-weight: 700; }
+    .ko { color: var(--red); font-weight: 700; }
+
+    /* ---------- Portada ---------- */
+
+    .cover-mark {
+      display: grid;
+      place-items: center;
+      width: 74px;
+      height: 74px;
+      margin-bottom: 26px;
+      border-radius: 22px;
+      background: linear-gradient(135deg, var(--accent), var(--accent-2));
+      box-shadow: 0 18px 40px rgba(53, 99, 240, 0.32);
+      color: #fff;
+    }
+
+    .cover-mark svg { width: 38px; height: 38px; }
+
+    /* ---------- HUD ---------- */
+
+    .progress {
+      position: fixed;
+      inset: 0 0 auto 0;
+      height: 3px;
+      background: rgba(16, 20, 29, 0.08);
+      z-index: 20;
+    }
+
+    .progress span {
+      display: block;
+      height: 100%;
+      width: 0;
+      background: linear-gradient(90deg, var(--accent), var(--accent-2));
+      transition: width 0.25s ease;
+    }
+
+    .hud {
+      position: fixed;
+      right: 26px;
+      bottom: 22px;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      z-index: 20;
+    }
+
+    .hud__count {
+      margin-right: 6px;
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+      color: var(--muted);
+      font-weight: 600;
+    }
+
+    .hud button {
+      display: inline-grid;
+      place-items: center;
+      min-width: 40px;
+      height: 40px;
+      padding: 0 12px;
+      border: 1px solid rgba(16, 20, 29, 0.12);
+      border-radius: 11px;
+      background: rgba(255, 255, 255, 0.92);
+      color: #2c3444;
+      font: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(6px);
+      transition: background 0.15s, transform 0.15s;
+    }
+
+    .hud button:hover {
+      background: #fff;
+      transform: translateY(-1px);
+    }
+
+    .hud button:disabled {
+      opacity: 0.4;
+      cursor: default;
+      transform: none;
+    }
+
+    .hud__hint {
+      position: fixed;
+      left: 26px;
+      bottom: 28px;
+      z-index: 20;
+      font-size: 12.5px;
+      color: #7a8397;
+    }
+
+    kbd {
+      font-family: var(--font);
+      font-size: 11px;
+      padding: 2px 6px;
+      border: 1px solid rgba(16, 20, 29, 0.16);
+      border-bottom-width: 2px;
+      border-radius: 5px;
+      background: #fff;
+      color: #4a5366;
+    }
+
+    /* ---------- Notas del expositor ---------- */
+
+    .notes {
+      position: fixed;
+      left: 50%;
+      bottom: 78px;
+      transform: translateX(-50%);
+      width: min(920px, calc(100vw - 48px));
+      margin: 0;
+      padding: 16px 20px;
+      border-radius: 14px;
+      background: rgba(14, 19, 32, 0.94);
+      color: #e7ecf7;
+      font-size: 15px;
+      line-height: 1.55;
+      box-shadow: 0 18px 40px rgba(16, 20, 29, 0.3);
+      z-index: 25;
+    }
+
+    .notes[hidden] { display: none; }
+
+    .notes b {
+      display: block;
+      margin-bottom: 4px;
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #9fb4e8;
+    }
+
+    /* ---------- Impresión / PDF ---------- */
+
+    @media print {
+      @page { size: A4 landscape; margin: 0; }
+
+      html, body {
+        height: auto;
+        overflow: visible;
+        background: #fff;
+      }
+
+      .progress, .hud, .hud__hint, .notes { display: none !important; }
+
+      .stage {
+        position: static;
+        width: auto;
+        height: auto;
+        transform: none !important;
+        border-radius: 0;
+        box-shadow: none;
+        overflow: visible;
+      }
+
+      .slide {
+        position: static !important;
+        display: flex !important;
+        width: 100%;
+        height: 100vh;
+        padding: 54px 64px;
+        opacity: 1 !important;
+        visibility: visible !important;
+        page-break-after: always;
+        break-after: page;
+      }
+
+      .slide:last-child {
+        page-break-after: auto;
+        break-after: auto;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="progress"><span id="progressBar"></span></div>
+
+  <main class="stage" id="stage">
+    <!-- 1 -->
+    <section class="slide slide--center is-active" data-notes="Saludo y contexto: este proyecto conecta una página web con un modelo de lenguaje real. Duración total: unos 5-7 minutos.">
+      <div class="slide__inner">
+        <div class="cover-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none">
+            <path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z" fill="currentColor" />
+          </svg>
+        </div>
+        <h1>Gemini Chat</h1>
+        <p class="subtitle">Cómo conectamos una web con la IA de <span class="accent-text">Google AI Studio</span></p>
+        <p class="meta"><strong>Danilo Chambi, Ph.D.</strong> · 31 de octubre de 2026</p>
+        <p class="meta meta--course">Fundamentos Sociotécnicos de la Inteligencia Artificial, Aprendizaje Automático y Diseño Responsable</p>
+        <div class="badges">
+          <span class="badge">HTML</span>
+          <span class="badge">CSS</span>
+          <span class="badge">JavaScript</span>
+          <span class="badge">API Gemini</span>
+          <span class="badge">CloudPanel</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2 -->
+    <section class="slide" data-notes="Mensaje clave: no hay backend. La web habla directamente con la API y todo el estado vive en el navegador.">
+      <div class="slide__inner">
+        <p class="kicker">El proyecto</p>
+        <h2>Una web que conversa con IA, sin servidor propio</h2>
+        <p class="lead">Tres archivos y una API: eso es todo lo que hay detrás del chat.</p>
+        <div class="grid-3" style="margin-top: 34px;">
+          <div class="card card--soft">
+            <div class="card__icon">💬</div>
+            <h3>Conversación real</h3>
+            <p>El modelo recibe el historial y responde en streaming, palabra por palabra.</p>
+          </div>
+          <div class="card card--soft">
+            <div class="card__icon">⚡</div>
+            <h3>100 % frontend</h3>
+            <p>HTML, CSS y JavaScript. Sin Node, sin base de datos, sin build.</p>
+          </div>
+          <div class="card card--soft">
+            <div class="card__icon">🌐</div>
+            <h3>Publicado</h3>
+            <p>Desplegado como sitio estático en CloudPanel con HTTPS.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3 -->
+    <section class="slide" data-notes="Resumir el proceso: primero la interfaz, luego la lógica, después la API, pruebas y despliegue. La parte más difícil fue manejar los errores y el streaming.">
+      <div class="slide__inner">
+        <p class="kicker">Desarrollo</p>
+        <h2>Así se construyó, paso a paso</h2>
+        <div class="steps">
+          <div class="step">
+            <div class="step__num">1</div>
+            <h3>Diseño</h3>
+            <p>Interfaz de chat: mensajes, estados vacíos, configuración.</p>
+          </div>
+          <div class="step">
+            <div class="step__num">2</div>
+            <h3>Estructura</h3>
+            <p>HTML semántico y CSS responsive con tema oscuro.</p>
+          </div>
+          <div class="step">
+            <div class="step__num">3</div>
+            <h3>Conexión</h3>
+            <p><code>fetch</code> a la API de Gemini y lectura del stream SSE.</p>
+          </div>
+          <div class="step">
+            <div class="step__num">4</div>
+            <h3>Pruebas</h3>
+            <p>Claves inválidas, modelos caídos, cuotas y respuestas vacías.</p>
+          </div>
+          <div class="step">
+            <div class="step__num">5</div>
+            <h3>Despliegue</h3>
+            <p>Sitio estático en CloudPanel + certificado SSL.</p>
+          </div>
+        </div>
+        <p class="code-note">Cada paso se probó en el navegador antes de pasar al siguiente.</p>
+      </div>
+    </section>
+
+    <!-- 4 -->
+    <section class="slide" data-notes="Destacar que no se usaron frameworks: menos dependencias, más control y se entiende todo el flujo.">
+      <div class="slide__inner">
+        <p class="kicker">Tecnologías</p>
+        <h2>Con qué está hecho</h2>
+        <div class="grid-2" style="gap: 16px;">
+          <div class="card">
+            <h3>HTML5</h3>
+            <p>Estructura del chat, diálogo de configuración y accesibilidad.</p>
+          </div>
+          <div class="card">
+            <h3>CSS3</h3>
+            <p>Tema oscuro, diseño responsive, animaciones y estados.</p>
+          </div>
+          <div class="card">
+            <h3>JavaScript</h3>
+            <p>Estado, manipulación del DOM, <code>fetch</code> y streams.</p>
+          </div>
+          <div class="card">
+            <h3>API Gemini</h3>
+            <p>Modelo de lenguaje de Google AI Studio vía HTTPS.</p>
+          </div>
+          <div class="card">
+            <h3>CloudPanel</h3>
+            <p>Hosting estático en nginx con certificado Let's Encrypt.</p>
+          </div>
+          <div class="card card--soft">
+            <h3>Sin frameworks</h3>
+            <p>Ni React ni bundler: solo tres archivos que se entienden de principio a fin.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5 -->
+    <section class="slide" data-notes="Explicar el diagrama: el navegador hace la petición directamente a Google; el servidor solo entrega archivos estáticos. La clave viaja en la URL de la petición HTTPS.">
+      <div class="slide__inner">
+        <p class="kicker">Arquitectura</p>
+        <h2>Quién habla con quién</h2>
+        <div class="flow">
+          <div class="flow__box">
+            <h3>Usuario</h3>
+            <p>Escribe una pregunta</p>
+          </div>
+          <div class="flow__arrow">→</div>
+          <div class="flow__box flow__box--accent">
+            <h3>Navegador</h3>
+            <p>HTML · CSS · JS<br />historial en memoria</p>
+          </div>
+          <div class="flow__arrow">⇄</div>
+          <div class="flow__box">
+            <h3>API Gemini</h3>
+            <p>Google AI Studio<br />modelo de lenguaje</p>
+          </div>
+        </div>
+        <ul>
+          <li>La petición sale del navegador por <strong>HTTPS</strong> con la clave del visitante.</li>
+          <li>La respuesta vuelve como <strong>eventos SSE</strong> y se pinta al instante.</li>
+          <li>El servidor (CloudPanel) solo entrega los archivos: <strong>no procesa la conversación</strong>.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 6 -->
+    <section class="slide" data-notes="Insistir en la seguridad: la clave no está en el código. Se guarda en localStorage, así que cada visitante usa la suya y nada se comparte entre usuarios.">
+      <div class="slide__inner">
+        <p class="kicker">Autenticación</p>
+        <h2>La API key</h2>
+        <ul>
+          <li>Se obtiene gratis en <strong>aistudio.google.com/apikey</strong>.</li>
+          <li>Se guarda en <strong>localStorage</strong>, solo en el navegador del visitante.</li>
+          <li><strong>Nunca</strong> se escribe en el HTML ni en el JavaScript.</li>
+          <li>Cada persona que entra usa su propia clave.</li>
+        </ul>
+        <div class="callout">
+          <strong>Si la clave se publica en el código</strong>, cualquiera puede leerla con «Ver código fuente» y gastar tu cuota de IA.
+        </div>
+      </div>
+    </section>
+
+    <!-- 7 -->
+    <section class="slide" data-notes="Esta es la petición real que hace la app. Explicar las tres partes: endpoint, cabecera Content-Type y cuerpo JSON con contents y generationConfig.">
+      <div class="slide__inner">
+        <p class="kicker">La conexión</p>
+        <h2>La petición HTTP</h2>
+        <pre><code><span class="k">POST</span> <span class="u">https://generativelanguage.googleapis.com/v1beta/models/</span>
+     <span class="u">gemini-flash-latest:streamGenerateContent?alt=sse&amp;key=•••</span>
+<span class="c">Content-Type: application/json</span>
+
+{
+  <span class="s">"contents"</span>: [
+    { <span class="s">"role"</span>: <span class="m">"user"</span>,  <span class="s">"parts"</span>: [{ <span class="s">"text"</span>: <span class="m">"Hola"</span> }] },
+    { <span class="s">"role"</span>: <span class="m">"model"</span>, <span class="s">"parts"</span>: [{ <span class="s">"text"</span>: <span class="m">"¡Hola!"</span> }] }
+  ],
+  <span class="s">"generationConfig"</span>: { <span class="s">"temperature"</span>: 0.7 }
+}</code></pre>
+        <p class="code-note">El historial se envía completo en cada petición: ahí está la «memoria» del chat.</p>
+      </div>
+    </section>
+
+    <!-- 8 -->
+    <section class="slide" data-notes="El streaming es lo que hace que se sienta como ChatGPT. Llegan líneas data: con trozos de texto y se van pintando con requestAnimationFrame.">
+      <div class="slide__inner">
+        <p class="kicker">Streaming</p>
+        <h2>La respuesta llega por trozos</h2>
+        <div class="grid-2" style="gap: 26px; align-items: start;">
+          <div>
+            <ul>
+              <li>Google responde con <strong>Server-Sent Events</strong>.</li>
+              <li>Cada línea <code>data: {...}</code> trae un fragmento de texto.</li>
+              <li>Se lee con <code>ReadableStream</code> y <code>TextDecoder</code>.</li>
+              <li>La interfaz se actualiza sin esperar el final.</li>
+            </ul>
+          </div>
+          <pre><code><span class="c">// cada evento SSE</span>
+<span class="k">data:</span> {<span class="s">"candidates"</span>:[{<span class="s">"content"</span>:
+  {<span class="s">"parts"</span>:[{<span class="s">"text"</span>:<span class="m">"Hola"</span>}]}}]}
+
+<span class="c">// leer el stream</span>
+<span class="k">const</span> reader = res.body.getReader();
+<span class="k">const</span> decoder = <span class="k">new</span> TextDecoder();
+
+decoder.decode(value, { stream: <span class="k">true</span> });
+onChunk(texto); <span class="c">// pintar</span></code></pre>
+        </div>
+        <p class="code-note">Resultado: el texto aparece mientras se genera, no después.</p>
+      </div>
+    </section>
+
+    <!-- 9 -->
+    <section class="slide" data-notes="La API es sin estado: no recuerda nada. La memoria la construimos nosotros enviando los mensajes anteriores con roles user y model.">
+      <div class="slide__inner">
+        <p class="kicker">Contexto</p>
+        <h2>La memoria del chat la ponemos nosotros</h2>
+        <div class="flow" style="margin-top: 4px;">
+          <div class="flow__box"><h3>1. Escribes</h3><p>Se guarda como <code>user</code></p></div>
+          <div class="flow__arrow">→</div>
+          <div class="flow__box"><h3>2. Se envía</h3><p>Últimos 40 mensajes</p></div>
+          <div class="flow__arrow">→</div>
+          <div class="flow__box"><h3>3. Responde</h3><p>Se guarda como <code>model</code></p></div>
+        </div>
+        <ul>
+          <li>Los roles <strong>alternan</strong>: <code>user</code> → <code>model</code> → <code>user</code>.</li>
+          <li>Más historial = mejor contexto, pero <strong>más tokens</strong> por petición.</li>
+          <li>Por eso se recorta la ventana y se empieza siempre por un mensaje de usuario.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 10 -->
+    <section class="slide" data-notes="Un chat también se juzga por cómo falla. Explicar los códigos y el cambio automático de modelo cuando hay alta demanda.">
+      <div class="slide__inner">
+        <p class="kicker">Robustez</p>
+        <h2>Qué pasa cuando algo falla</h2>
+        <div class="chips" style="margin-bottom: 22px;">
+          <span class="chip"><b>400</b> clave o petición inválida</span>
+          <span class="chip"><b>403</b> acceso denegado</span>
+          <span class="chip chip--warn"><b>404</b> modelo retirado</span>
+          <span class="chip chip--warn"><b>429</b> cuota agotada</span>
+          <span class="chip chip--bad"><b>503</b> modelo saturado</span>
+        </div>
+        <ul>
+          <li>Los errores se traducen a <strong>mensajes claros</strong>, no a JSON crudo.</li>
+          <li>Botón <strong>Reintentar</strong> y botón <strong>Detener</strong> (<code>AbortController</code>).</li>
+          <li>Si el modelo da 503 o 404, la app <strong>prueba otro automáticamente</strong>.</li>
+        </ul>
+      </div>
+    </section>
+
+    <!-- 11 -->
+    <section class="slide" data-notes="Ser honesto con las limitaciones: la clave en el navegador sirve para una demo, no para producción. Y la IA puede equivocarse con seguridad.">
+      <div class="slide__inner">
+        <p class="kicker">Seguridad y límites</p>
+        <h2>Lo que hay que tener claro</h2>
+        <div class="grid-2">
+          <div class="card">
+            <h3 class="ok">Bien resuelto</h3>
+            <ul style="margin-top: 12px;">
+              <li>Clave fuera del código fuente.</li>
+              <li>Cada visitante usa la suya.</li>
+              <li>HTTPS en el despliegue.</li>
+              <li>Sin backend que atacar.</li>
+            </ul>
+          </div>
+          <div class="card">
+            <h3 class="ko">Con cuidado</h3>
+            <ul style="margin-top: 12px;">
+              <li>La clave es visible en DevTools.</li>
+              <li>No vale para producción multiusuario.</li>
+              <li>La IA puede inventar datos.</li>
+              <li>La calidad depende del modelo y la temperatura.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="callout">
+          <strong>Para producción:</strong> mover la llamada a un backend que guarde la clave en el servidor y actúe de proxy.
+        </div>
+      </div>
+    </section>
+
+    <!-- 12 -->
+    <section class="slide" data-notes="El despliegue es lo más rápido: elegir el tipo de sitio, subir los archivos y activar el certificado. Sin build ni reinicios.">
+      <div class="slide__inner">
+        <p class="kicker">Despliegue</p>
+        <h2>Publicado en CloudPanel</h2>
+        <div class="steps">
+          <div class="step">
+            <div class="step__num">1</div>
+            <h3>Crear el sitio</h3>
+            <p>«Create a Static HTML Site» con el dominio.</p>
+          </div>
+          <div class="step">
+            <div class="step__num">2</div>
+            <h3>Subir archivos</h3>
+            <p>Los tres archivos a <code>htdocs/tudominio.com</code>.</p>
+          </div>
+          <div class="step">
+            <div class="step__num">3</div>
+            <h3>Activar SSL</h3>
+            <p>Let's Encrypt desde el panel.</p>
+          </div>
+          <div class="step">
+            <div class="step__num">4</div>
+            <h3>Probar</h3>
+            <p>Abrir el dominio, pegar la clave y chatear.</p>
+          </div>
+        </div>
+        <p class="code-note">Sin build, sin base de datos, sin reiniciar servicios: nginx sirve los archivos al instante.</p>
+      </div>
+    </section>
+
+    <!-- 13 -->
+    <section class="slide" data-notes="Proponer 4-5 preguntas para la demo. Mejor empezar por algo simple, seguir con contexto y terminar con una pregunta crítica. Ver PREGUNTAS.md para el guion completo.">
+      <div class="slide__inner">
+        <p class="kicker">Demo</p>
+        <h2>Preguntas para probarlo en clase</h2>
+        <ul>
+          <li>«Explícame la recursión con una analogía cotidiana.»</li>
+          <li>«Escribe una función en JavaScript que valide emails y explícala.»</li>
+          <li>«Resume este texto en tres puntos: …» <span style="color:#8a93a8;">(pegar un párrafo)</span></li>
+          <li>«Dame 3 argumentos a favor y 3 en contra de prohibir el móvil en clase.»</li>
+          <li>«Ahora hazme 5 preguntas tipo test sobre lo anterior.» <span style="color:#8a93a8;">(muestra la memoria)</span></li>
+        </ul>
+        <div class="callout">
+          <strong>Truco:</strong> cambia la temperatura a 1.5 y repite la misma pregunta para comparar respuestas.
+        </div>
+      </div>
+    </section>
+
+    <!-- 14 -->
+    <section class="slide slide--center" data-notes="Cerrar con las ideas clave y abrir el turno de preguntas. Si hay tiempo, hacer una demo en vivo con una pregunta del público.">
+      <div class="slide__inner">
+        <p class="kicker">Conclusiones</p>
+        <h2 style="margin-bottom: 18px;">Lo que aprendí</h2>
+        <ul style="max-width: 860px; text-align: left;">
+          <li><strong>Una API</strong> es una URL, unos datos y una autenticación.</li>
+          <li><strong>El streaming</strong> convierte una espera en una conversación.</li>
+          <li><strong>El historial</strong> es la memoria del chat.</li>
+          <li><strong>Errores y seguridad</strong> son parte del proyecto, no un extra.</li>
+        </ul>
+        <p class="subtitle" style="margin-top: 34px; font-size: 30px; color: var(--ink); font-weight: 650;">
+          Gracias · ¿Preguntas?
+        </p>
+      </div>
+    </section>
+  </main>
+
+  <div class="hud__hint">
+    <kbd>←</kbd> <kbd>→</kbd> navegar · <kbd>N</kbd> notas · <kbd>F</kbd> pantalla completa
+  </div>
+
+  <div class="hud">
+    <span class="hud__count" id="counter">1 / 14</span>
+    <button type="button" id="prevBtn" aria-label="Diapositiva anterior">←</button>
+    <button type="button" id="nextBtn" aria-label="Diapositiva siguiente">→</button>
+    <button type="button" id="notesBtn" aria-label="Mostrar notas del expositor" title="Notas (N)">Notas</button>
+    <button type="button" id="printBtn" aria-label="Imprimir o guardar como PDF" title="Guardar como PDF">PDF</button>
+  </div>
+
+  <aside class="notes" id="notes" hidden>
+    <b>Notas del expositor</b>
+    <span id="notesText"></span>
+  </aside>
+
+  <script>
+    (function () {
+      const stage = document.getElementById("stage");
+      const slides = Array.from(document.querySelectorAll(".slide"));
+      const counter = document.getElementById("counter");
+      const bar = document.getElementById("progressBar");
+      const prevBtn = document.getElementById("prevBtn");
+      const nextBtn = document.getElementById("nextBtn");
+      const notesBtn = document.getElementById("notesBtn");
+      const printBtn = document.getElementById("printBtn");
+      const notes = document.getElementById("notes");
+      const notesText = document.getElementById("notesText");
+
+      let current = 0;
+
+      function fitStage() {
+        const margin = 44;
+        const scale = Math.min(
+          (window.innerWidth - margin) / 1280,
+          (window.innerHeight - margin) / 720
+        );
+        stage.style.setProperty("--s", String(Math.max(0.2, scale)));
+      }
+
+      function go(index) {
+        current = Math.max(0, Math.min(slides.length - 1, index));
+
+        slides.forEach((slide, i) => {
+          slide.classList.toggle("is-active", i === current);
+          slide.setAttribute("aria-hidden", i === current ? "false" : "true");
+        });
+
+        counter.textContent = (current + 1) + " / " + slides.length;
+        bar.style.width = ((current + 1) / slides.length) * 100 + "%";
+        notesText.textContent = slides[current].dataset.notes || "";
+        prevBtn.disabled = current === 0;
+        nextBtn.disabled = current === slides.length - 1;
+
+        try {
+          history.replaceState(null, "", "#" + (current + 1));
+        } catch (error) {
+          /* file:// puede bloquear replaceState */
+        }
+      }
+
+      function toggleNotes() {
+        notes.hidden = !notes.hidden;
+        notesBtn.style.background = notes.hidden ? "" : "rgba(255,255,255,0.6)";
+      }
+
+      function next() { go(current + 1); }
+      function prev() { go(current - 1); }
+
+      prevBtn.addEventListener("click", prev);
+      nextBtn.addEventListener("click", next);
+      notesBtn.addEventListener("click", toggleNotes);
+      printBtn.addEventListener("click", function () { window.print(); });
+
+      document.addEventListener("keydown", function (event) {
+        const key = event.key;
+
+        if (key === "ArrowRight" || key === "PageDown" || key === " ") {
+          event.preventDefault();
+          next();
+        } else if (key === "ArrowLeft" || key === "PageUp") {
+          event.preventDefault();
+          prev();
+        } else if (key === "Home") {
+          event.preventDefault();
+          go(0);
+        } else if (key === "End") {
+          event.preventDefault();
+          go(slides.length - 1);
+        } else if (key === "n" || key === "N") {
+          toggleNotes();
+        } else if (key === "f" || key === "F") {
+          if (document.fullscreenElement) {
+            document.exitFullscreen();
+          } else if (document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+          }
+        }
+      });
+
+      // Deslizar en pantallas táctiles.
+      let touchX = null;
+      document.addEventListener("touchstart", function (event) {
+        touchX = event.touches[0].clientX;
+      }, { passive: true });
+      document.addEventListener("touchend", function (event) {
+        if (touchX === null) return;
+        const delta = event.changedTouches[0].clientX - touchX;
+        if (Math.abs(delta) > 50) {
+          if (delta < 0) next(); else prev();
+        }
+        touchX = null;
+      }, { passive: true });
+
+      window.addEventListener("resize", fitStage);
+
+      const fromHash = parseInt(window.location.hash.slice(1), 10);
+      fitStage();
+      go(Number.isFinite(fromHash) && fromHash > 0 ? fromHash - 1 : 0);
+    })();
+  </script>
+</body>
+</html>

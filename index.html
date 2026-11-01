@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gemini Chat · Google AI Studio</title>
+  <meta name="description" content="Chat sencillo en HTML, CSS y JS conectado a la API de Google AI Studio." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%235b8cff'/%3E%3Cstop offset='1' stop-color='%23a78bfa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='24' fill='%230b0d12'/%3E%3Cpath d='M50 18l7 18 18 7-18 7-7 18-7-18-18-7 18-7z' fill='url(%23g)'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand">
+        <span class="brand__logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="20" height="20" fill="none">
+            <path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z" fill="currentColor" />
+          </svg>
+        </span>
+        <div class="brand__text">
+          <h1>Gemini Chat</h1>
+          <p>Google AI Studio</p>
+        </div>
+      </div>
+
+      <div class="topbar__actions">
+        <select id="modelSelect" class="select" aria-label="Modelo de Gemini" title="Modelo"></select>
+
+        <button id="newChatBtn" class="icon-btn" type="button" title="Nueva conversación" aria-label="Nueva conversación">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M12 5v14M5 12h14" />
+          </svg>
+        </button>
+
+        <button id="settingsBtn" class="icon-btn" type="button" title="Configuración" aria-label="Configuración">
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3" />
+            <path d="M19.4 15a1.7 1.7 0 0 0 .34 1.87l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.7 1.7 0 0 0-1.87-.34 1.7 1.7 0 0 0-1 1.55V21a2 2 0 1 1-4 0v-.09a1.7 1.7 0 0 0-1.11-1.55 1.7 1.7 0 0 0-1.87.34l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.7 1.7 0 0 0 .34-1.87 1.7 1.7 0 0 0-1.55-1H3a2 2 0 1 1 0-4h.09a1.7 1.7 0 0 0 1.55-1.11 1.7 1.7 0 0 0-.34-1.87l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.7 1.7 0 0 0 1.87.34H9a1.7 1.7 0 0 0 1-1.55V3a2 2 0 1 1 4 0v.09a1.7 1.7 0 0 0 1 1.55 1.7 1.7 0 0 0 1.87-.34l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.7 1.7 0 0 0-.34 1.87V9a1.7 1.7 0 0 0 1.55 1H21a2 2 0 1 1 0 4h-.09a1.7 1.7 0 0 0-1.51 1z" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <main id="chat" class="chat">
+      <div id="keyBanner" class="banner" hidden>
+        <div class="banner__text">
+          <strong>Falta tu API key</strong>
+          <span>Conéctala para empezar a chatear.</span>
+        </div>
+        <button class="btn btn--primary btn--sm" type="button" data-open-settings>Configurar</button>
+      </div>
+
+      <section id="emptyState" class="empty">
+        <div class="empty__logo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="30" height="30" fill="none">
+            <path d="M12 2l2.4 6.6L21 11l-6.6 2.4L12 20l-2.4-6.6L3 11l6.6-2.4L12 2z" fill="currentColor" />
+          </svg>
+        </div>
+        <h2>¿En qué puedo ayudarte?</h2>
+        <p>Este chat se conecta directamente con la API de Google AI Studio desde tu navegador.</p>
+
+        <div class="chips">
+          <button class="chip" type="button" data-prompt="Explícame las diferencias entre let, const y var en JavaScript con ejemplos.">Diferencias entre let, const y var</button>
+          <button class="chip" type="button" data-prompt="Escribe una función en JavaScript que valide un correo electrónico y explica cómo funciona.">Validar un email en JS</button>
+          <button class="chip" type="button" data-prompt="Dame 5 ideas de proyectos pequeños que pueda construir con la API de Gemini.">Ideas con la API de Gemini</button>
+          <button class="chip" type="button" data-prompt="Resume en 3 puntos qué es la API de Google AI Studio y para qué sirve.">¿Qué es Google AI Studio?</button>
+        </div>
+
+        <p id="emptyKeyHint" class="empty__hint">Aún no hay una API key configurada.</p>
+      </section>
+
+      <div id="messages" class="messages"></div>
+    </main>
+
+    <footer class="composer-wrap">
+      <form id="composer" class="composer">
+        <textarea id="input" rows="1" placeholder="Escribe tu mensaje…" aria-label="Mensaje"></textarea>
+
+        <div class="composer__actions">
+          <button id="stopBtn" class="send-btn send-btn--stop" type="button" title="Detener" aria-label="Detener" hidden>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+              <rect x="7" y="7" width="10" height="10" rx="2" />
+            </svg>
+          </button>
+
+          <button id="sendBtn" class="send-btn" type="submit" title="Enviar" aria-label="Enviar">
+            <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 19V5M5.5 11.5L12 5l6.5 6.5" />
+            </svg>
+          </button>
+        </div>
+      </form>
+
+      <p class="hint">
+        <span><kbd>Enter</kbd> envía · <kbd>Shift</kbd> + <kbd>Enter</kbd> salto de línea</span>
+        <span id="modelHint" class="hint__model"></span>
+      </p>
+    </footer>
+  </div>
+
+  <dialog id="settingsDialog" class="dialog">
+    <form id="settingsForm" class="dialog__form" novalidate>
+      <header class="dialog__head">
+        <h2>Configuración</h2>
+        <button type="button" class="icon-btn" id="closeSettingsBtn" aria-label="Cerrar">✕</button>
+      </header>
+
+      <label class="field">
+        <span class="field__label">API key de Google AI Studio</span>
+        <input id="apiKeyInput" class="input" type="password" placeholder="AIza…" autocomplete="off" spellcheck="false" />
+        <span class="field__hint">
+          Se guarda solo en este navegador. Consíguela en
+          <a href="https://aistudio.google.com/apikey" target="_blank" rel="noopener noreferrer">aistudio.google.com/apikey ↗</a>
+        </span>
+      </label>
+
+      <label class="field">
+        <span class="field__label">Temperatura <span id="tempValue" class="field__value">0.7</span></span>
+        <input id="tempInput" class="range" type="range" min="0" max="2" step="0.1" value="0.7" />
+        <span class="field__hint">Más bajo = respuestas más precisas. Más alto = más creativas.</span>
+      </label>
+
+      <div class="dialog__actions">
+        <button type="button" id="detectModelsBtn" class="btn btn--ghost">↻ Actualizar modelos</button>
+        <button type="submit" class="btn btn--primary">Guardar</button>
+      </div>
+
+      <p id="settingsStatus" class="status" role="status"></p>
+      <p class="dialog__note">
+        Esta demo llama a la API desde el navegador. No publiques tu clave ni la subas a un repositorio.
+      </p>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>
