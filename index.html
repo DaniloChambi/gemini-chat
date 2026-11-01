@@ -5,8 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Gemini Chat · Google AI Studio</title>
   <meta name="description" content="Chat sencillo en HTML, CSS y JS conectado a la API de Google AI Studio." />
+  <meta name="theme-color" content="#f5f7fb" id="themeColor" />
+  <script>
+    // Aplica el tema guardado antes de pintar para evitar un destello de color.
+    (function () {
+      try {
+        if (localStorage.getItem("geminichat.theme") === "dark") {
+          document.documentElement.setAttribute("data-theme", "dark");
+        }
+      } catch (error) {
+        /* almacenamiento bloqueado: se queda el tema claro */
+      }
+    })();
+  </script>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%235b8cff'/%3E%3Cstop offset='1' stop-color='%23a78bfa'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='100' height='100' rx='24' fill='%230b0d12'/%3E%3Cpath d='M50 18l7 18 18 7-18 7-7 18-7-18-18-7 18-7z' fill='url(%23g)'/%3E%3C/svg%3E" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=2" />
 </head>
 <body>
   <div class="app">
@@ -25,6 +38,16 @@
 
       <div class="topbar__actions">
         <select id="modelSelect" class="select" aria-label="Modelo de Gemini" title="Modelo"></select>
+
+        <button id="themeBtn" class="icon-btn theme-toggle" type="button" title="Cambiar a tema oscuro" aria-label="Cambiar a tema oscuro" aria-pressed="false">
+          <svg class="theme-toggle__moon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M20.5 14.2A8.6 8.6 0 0 1 9.8 3.5a8.6 8.6 0 1 0 10.7 10.7z" />
+          </svg>
+          <svg class="theme-toggle__sun" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+            <circle cx="12" cy="12" r="4" />
+            <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4" />
+          </svg>
+        </button>
 
         <button id="newChatBtn" class="icon-btn" type="button" title="Nueva conversación" aria-label="Nueva conversación">
           <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
@@ -132,6 +155,6 @@
     </form>
   </dialog>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=2"></script>
 </body>
 </html>

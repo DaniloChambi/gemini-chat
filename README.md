@@ -13,7 +13,8 @@ conversa con los modelos de Gemini usando la **API de Google AI Studio**.
 - API key y conversación guardadas en `localStorage` (solo en tu navegador).
 - Temperatura ajustable, detener generación, reintentar y copiar respuestas.
 - Render Markdown básico (negritas, listas, código, enlaces).
-- UI responsive con tema oscuro.
+- UI responsive con **tema claro por defecto** y botón para cambiar a oscuro
+  (la preferencia se guarda en `localStorage`).
 
 ## Archivos
 

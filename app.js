@@ -8,6 +8,7 @@ const API_BASE = "https://generativelanguage.googleapis.com/v1beta";
 const LS_SETTINGS = "geminichat.settings";
 const LS_HISTORY = "geminichat.history";
 const LS_MODELS = "geminichat.models";
+const LS_THEME = "geminichat.theme";
 
 const DEFAULT_MODELS = [
   "gemini-flash-latest",
@@ -46,6 +47,8 @@ const els = {
 
   modelSelect: document.getElementById("modelSelect"),
   modelHint: document.getElementById("modelHint"),
+  themeBtn: document.getElementById("themeBtn"),
+  themeColor: document.getElementById("themeColor"),
 
   composer: document.getElementById("composer"),
   input: document.getElementById("input"),
@@ -113,6 +116,48 @@ function persistHistory() {
 
 function persistModels() {
   localStorage.setItem(LS_MODELS, JSON.stringify(state.models));
+}
+
+/* ============================================================
+   Tema claro / oscuro
+   El tema claro es el de por defecto; la elección se recuerda en
+   localStorage y solo se aplica el oscuro si el visitante lo pide.
+   ============================================================ */
+
+function currentTheme() {
+  return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light";
+}
+
+function applyTheme(theme, persist = false) {
+  const dark = theme === "dark";
+  const root = document.documentElement;
+
+  if (dark) {
+    root.setAttribute("data-theme", "dark");
+  } else {
+    root.removeAttribute("data-theme");
+  }
+
+  const label = dark ? "Cambiar a tema claro" : "Cambiar a tema oscuro";
+  els.themeBtn.title = label;
+  els.themeBtn.setAttribute("aria-label", label);
+  els.themeBtn.setAttribute("aria-pressed", String(dark));
+
+  if (els.themeColor) {
+    els.themeColor.setAttribute("content", dark ? "#0b0d12" : "#f5f7fb");
+  }
+
+  if (persist) {
+    try {
+      localStorage.setItem(LS_THEME, theme);
+    } catch {
+      /* almacenamiento bloqueado: el tema funciona igual en esta pestaña */
+    }
+  }
+}
+
+function toggleTheme() {
+  applyTheme(currentTheme() === "dark" ? "light" : "dark", true);
 }
 
 /* ============================================================
@@ -767,6 +812,15 @@ function bindEvents() {
 
   els.newChatBtn.addEventListener("click", clearConversation);
 
+  els.themeBtn.addEventListener("click", toggleTheme);
+
+  // Si el tema cambia en otra pestaña, se sincroniza aquí.
+  window.addEventListener("storage", (event) => {
+    if (event.key === LS_THEME) {
+      applyTheme(event.newValue === "dark" ? "dark" : "light");
+    }
+  });
+
   els.settingsBtn.addEventListener("click", () => openSettings());
   document.querySelectorAll("[data-open-settings]").forEach((button) => {
     button.addEventListener("click", () => openSettings());
@@ -813,6 +867,7 @@ function bindEvents() {
 
 function init() {
   load();
+  applyTheme(currentTheme());
   renderModelOptions();
   bindEvents();
   updateKeyState();

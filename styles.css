@@ -3,6 +3,46 @@
    ============================================================ */
 
 :root {
+  /* Tema claro (por defecto). El oscuro se activa con [data-theme="dark"]. */
+  color-scheme: light;
+
+  --bg: #f5f7fb;
+  --bg-soft: #eef1f8;
+  --panel: #ffffff;
+  --panel-2: #f1f4fa;
+  --border: #e2e7f0;
+  --border-strong: #c9d2e3;
+  --text: #131822;
+  --muted: #5f6b82;
+  --name: #39435a;
+  --accent: #2f5fe8;
+  --accent-2: #7c5cf0;
+  --accent-soft: rgba(47, 95, 232, 0.08);
+  --accent-border: rgba(47, 95, 232, 0.28);
+  --danger: #d92d20;
+  --danger-text: #b42318;
+  --danger-soft: rgba(217, 45, 32, 0.08);
+  --danger-border: rgba(217, 45, 32, 0.32);
+  --ok: #067647;
+  --glow-1: rgba(47, 95, 232, 0.1);
+  --glow-2: rgba(124, 92, 240, 0.09);
+  --scroll: #c7d0e0;
+  --placeholder: #8a95a9;
+  --code-bg: rgba(15, 23, 42, 0.06);
+  --code-block-bg: #0f131c;
+  --code-block-text: #e7ecf6;
+  --code-block-border: #1b2334;
+  --backdrop: rgba(15, 23, 42, 0.3);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --shadow: 0 24px 60px rgba(16, 24, 40, 0.14);
+  --font: "Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  --mono: "SF Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
   --bg: #0b0d12;
   --bg-soft: #10131b;
   --panel: #12161f;
@@ -11,16 +51,26 @@
   --border-strong: #2f394d;
   --text: #e9edf6;
   --muted: #8b94aa;
+  --name: #b9c1d4;
   --accent: #5b8cff;
   --accent-2: #a78bfa;
   --accent-soft: rgba(91, 140, 255, 0.14);
+  --accent-border: rgba(91, 140, 255, 0.35);
   --danger: #ff6b6b;
+  --danger-text: #ffb3b3;
   --danger-soft: rgba(255, 107, 107, 0.12);
-  --radius: 16px;
-  --radius-sm: 10px;
+  --danger-border: rgba(255, 107, 107, 0.4);
+  --ok: #6ee7b7;
+  --glow-1: rgba(91, 140, 255, 0.16);
+  --glow-2: rgba(167, 139, 250, 0.12);
+  --scroll: #2a3244;
+  --placeholder: #6b748a;
+  --code-bg: rgba(255, 255, 255, 0.08);
+  --code-block-bg: #0a0c11;
+  --code-block-text: #e9edf6;
+  --code-block-border: #232a3a;
+  --backdrop: rgba(4, 6, 10, 0.7);
   --shadow: 0 24px 60px rgba(0, 0, 0, 0.45);
-  --font: "Inter", "SF Pro Display", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-  --mono: "SF Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 * {
@@ -42,8 +92,8 @@ body {
   font-family: var(--font);
   color: var(--text);
   background:
-    radial-gradient(900px 500px at 15% -10%, rgba(91, 140, 255, 0.16), transparent 60%),
-    radial-gradient(800px 500px at 85% 0%, rgba(167, 139, 250, 0.12), transparent 55%),
+    radial-gradient(900px 500px at 15% -10%, var(--glow-1), transparent 60%),
+    radial-gradient(800px 500px at 85% 0%, var(--glow-2), transparent 55%),
     var(--bg);
   -webkit-font-smoothing: antialiased;
 }
@@ -124,6 +174,9 @@ kbd {
   font-size: 16px;
   font-weight: 650;
   letter-spacing: -0.01em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .brand__text p {
@@ -136,10 +189,12 @@ kbd {
   display: flex;
   align-items: center;
   gap: 8px;
+  min-width: 0;
 }
 
 .select {
   appearance: none;
+  min-width: 0;
   max-width: 220px;
   padding: 9px 34px 9px 12px;
   border-radius: var(--radius-sm);
@@ -178,6 +233,19 @@ kbd {
   background: var(--panel-2);
 }
 
+/* Botón de tema: muestra la luna en claro y el sol en oscuro. */
+.theme-toggle__sun {
+  display: none;
+}
+
+:root[data-theme="dark"] .theme-toggle__sun {
+  display: block;
+}
+
+:root[data-theme="dark"] .theme-toggle__moon {
+  display: none;
+}
+
 /* ---------- Chat ---------- */
 
 .chat {
@@ -185,7 +253,7 @@ kbd {
   overscroll-behavior: contain;
   padding: 22px 4px 8px;
   scrollbar-width: thin;
-  scrollbar-color: #2a3244 transparent;
+  scrollbar-color: var(--scroll) transparent;
 }
 
 .chat::-webkit-scrollbar {
@@ -193,7 +261,7 @@ kbd {
 }
 
 .chat::-webkit-scrollbar-thumb {
-  background: #2a3244;
+  background: var(--scroll);
   border-radius: 99px;
 }
 
@@ -205,7 +273,7 @@ kbd {
   margin-bottom: 20px;
   padding: 14px 16px;
   border-radius: var(--radius-sm);
-  border: 1px solid rgba(91, 140, 255, 0.35);
+  border: 1px solid var(--accent-border);
   background: var(--accent-soft);
 }
 
@@ -295,7 +363,7 @@ kbd {
 }
 
 .empty__hint.is-ok {
-  color: #6ee7b7;
+  color: var(--ok);
 }
 
 /* ---------- Mensajes ---------- */
@@ -343,7 +411,7 @@ kbd {
 
 .msg__name {
   font-weight: 600;
-  color: #b9c1d4;
+  color: var(--name);
 }
 
 .msg__copy {
@@ -391,9 +459,9 @@ kbd {
 }
 
 .msg--error .msg__bubble {
-  border: 1px solid rgba(255, 107, 107, 0.35);
+  border: 1px solid var(--danger-border);
   background: var(--danger-soft);
-  color: #ffb3b3;
+  color: var(--danger-text);
 }
 
 .msg__body {
@@ -434,7 +502,7 @@ kbd {
 .msg__body code {
   padding: 2px 5px;
   border-radius: 5px;
-  background: rgba(255, 255, 255, 0.08);
+  background: var(--code-bg);
   font-family: var(--mono);
   font-size: 12.6px;
 }
@@ -443,8 +511,9 @@ kbd {
   margin: 12px 0;
   padding: 13px 15px;
   border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: #0a0c11;
+  border: 1px solid var(--code-block-border);
+  background: var(--code-block-bg);
+  color: var(--code-block-text);
   overflow-x: auto;
 }
 
@@ -468,14 +537,14 @@ kbd {
   margin-top: 10px;
   padding: 6px 12px;
   border-radius: 8px;
-  border: 1px solid rgba(255, 107, 107, 0.4);
+  border: 1px solid var(--danger-border);
   background: transparent;
-  color: #ffb3b3;
+  color: var(--danger-text);
   font-size: 12.5px;
 }
 
 .retry-btn:hover {
-  background: rgba(255, 107, 107, 0.14);
+  background: var(--danger-soft);
 }
 
 .msg__switched {
@@ -526,8 +595,8 @@ kbd {
 }
 
 .composer:focus-within {
-  border-color: rgba(91, 140, 255, 0.6);
-  box-shadow: 0 0 0 4px rgba(91, 140, 255, 0.1);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--accent-soft);
 }
 
 .composer textarea {
@@ -544,7 +613,7 @@ kbd {
 }
 
 .composer textarea::placeholder {
-  color: #6b748a;
+  color: var(--placeholder);
 }
 
 .composer__actions {
@@ -586,7 +655,7 @@ kbd {
   gap: 12px;
   margin: 9px 4px 0;
   font-size: 11px;
-  color: #6b748a;
+  color: var(--muted);
 }
 
 .hint__model {
@@ -608,7 +677,7 @@ kbd {
 }
 
 .dialog::backdrop {
-  background: rgba(4, 6, 10, 0.7);
+  background: var(--backdrop);
   backdrop-filter: blur(4px);
 }
 
@@ -650,7 +719,7 @@ kbd {
   justify-content: space-between;
   font-size: 12.5px;
   font-weight: 600;
-  color: #c3cadb;
+  color: var(--text);
 }
 
 .field__value {
@@ -677,8 +746,8 @@ kbd {
 }
 
 .input:focus {
-  border-color: rgba(91, 140, 255, 0.6);
-  box-shadow: 0 0 0 3px rgba(91, 140, 255, 0.12);
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
 }
 
 .range {
@@ -696,7 +765,7 @@ kbd {
   margin: 0;
   font-size: 11px;
   line-height: 1.55;
-  color: #6b748a;
+  color: var(--muted);
 }
 
 .status {
@@ -707,11 +776,11 @@ kbd {
 }
 
 .status.is-error {
-  color: #ff9b9b;
+  color: var(--danger-text);
 }
 
 .status.is-ok {
-  color: #6ee7b7;
+  color: var(--ok);
 }
 
 .btn {
@@ -781,13 +850,39 @@ kbd {
     padding: 0 12px;
   }
 
+  .brand {
+    gap: 9px;
+  }
+
+  .brand__logo {
+    width: 34px;
+    height: 34px;
+    border-radius: 10px;
+  }
+
+  .brand__text h1 {
+    font-size: 15px;
+  }
+
   .brand__text p {
     display: none;
   }
 
+  .topbar__actions {
+    gap: 6px;
+  }
+
   .select {
-    max-width: 140px;
+    max-width: 118px;
     font-size: 12px;
+    padding-left: 10px;
+    padding-right: 28px;
+    background-position: right 9px center;
+  }
+
+  .icon-btn {
+    width: 34px;
+    height: 34px;
   }
 
   .empty {
