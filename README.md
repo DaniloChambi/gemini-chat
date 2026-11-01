@@ -45,9 +45,12 @@ ConexionAPI/
 
 ## Despliegue
 
-Es un sitio 100 % estático (sin build ni backend). Para publicarlo en
-CloudPanel sigue [DEPLOY.md](DEPLOY.md): crear *Static Site*, subir los tres
-archivos a `htdocs`, activar Let's Encrypt y listo.
+Es un sitio 100 % estático (sin build ni backend). Tienes dos guías:
+
+- **[DEPLOY-DOKPLOY.md](DEPLOY-DOKPLOY.md)** — Dokploy con Dockerfile (o *Static*
+  build type), dominio, HTTPS y auto deploy con cada push.
+- **[DEPLOY.md](DEPLOY.md)** — CloudPanel: crear *Static Site*, subir los
+  archivos a `htdocs` y activar Let's Encrypt.
 
 > No subas tu API key dentro del código: la app la pide a cada visitante y la
 > guarda en su navegador. Si quieres usar una clave propia para todos, necesitas

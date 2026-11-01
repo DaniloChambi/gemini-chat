@@ -3,6 +3,9 @@
 El proyecto es **100 % estático**: `index.html`, `styles.css` y `app.js`. No hay
 build, ni Node, ni base de datos. CloudPanel lo sirve con nginx tal cual.
 
+> ¿Usas **Dokploy**? Tienes una guía específica en
+> [DEPLOY-DOKPLOY.md](DEPLOY-DOKPLOY.md).
+
 > Requisito importante: la app pide la API key a cada visitante y la guarda en
 > **su** navegador. Nunca subas tu clave dentro de los archivos.
 
